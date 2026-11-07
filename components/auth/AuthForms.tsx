@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useLayoutEffect, useState, type FormEvent } from "react";
 import { CircleNotchIcon, EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { ApiError } from "@/lib/api";
 import { cx, isValidVNPhone, normalizePhone } from "@/lib/format";
@@ -65,7 +65,30 @@ export function AuthForms() {
   const [email, setEmail] = useState("");
   const [isCoach, setIsCoach] = useState(false);
 
+  /* Next 16 (cacheComponents) không unmount trang khi điều hướng mà ẩn bằng <Activity>, nên state form còn nguyên.
+     Không xóa thì lần quay lại /login (sau khi đăng xuất) ô mật khẩu vẫn chứa mật khẩu cũ bị che dấu chấm:
+     người dùng gõ thêm vào sau → mật khẩu gửi đi bị nhân đôi → báo sai mật khẩu dù đã nhập đúng. */
+  const resetForm = () => {
+    setPassword("");
+    setFullName("");
+    setEmail("");
+    setIsCoach(false);
+    setErrors({});
+    setFormError(null);
+  };
+
+  // Chạy khi Activity ẩn trang: lần hiện lại form luôn sạch
+  useLayoutEffect(() => {
+    return () => {
+      setPassword("");
+      setErrors({});
+      setFormError(null);
+      setLoading(false);
+    };
+  }, []);
+
   const afterAuth = (user: AuthUser) => {
+    resetForm();
     notify({ tone: "success", title: `Xin chào, ${user.full_name}` });
     const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
     router.push(safeNext ?? (isStaffRole(user.role) ? "/admin" : "/"));
@@ -117,6 +140,7 @@ export function AuthForms() {
 
   const switchTab = (t: "login" | "register") => {
     setTab(t);
+    setPassword("");
     setErrors({});
     setFormError(null);
   };
