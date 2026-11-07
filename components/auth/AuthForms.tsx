@@ -98,7 +98,9 @@ export function AuthForms() {
     setLoading(true);
     setFormError(null);
     try {
-      afterAuth(await login(normalizePhone(p), pw));
+      // Chỉ chuẩn hóa khi là số điện thoại: normalizePhone xóa dấu chấm, làm hỏng email kiểu "ten.ho@gmail.com"
+      const identifier = p.includes("@") ? p.trim() : normalizePhone(p);
+      afterAuth(await login(identifier, pw));
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
