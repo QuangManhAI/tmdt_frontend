@@ -212,17 +212,23 @@ function CheckoutForm({ user, onPlacing }: { user: AuthUser | null; onPlacing: (
       saveRecentOrder(order.order_code, order.customer_phone);
 
       if (method === "MoMo") {
-        const payment = await apiRequest<{ pay_url: string }>("/api/v1/payments/momo/create", {
-          method: "POST",
-          token,
-          body: { order_code: order.order_code },
-        });
+        // Đơn đã tạo xong: lỗi ở bước này không được để khách đặt lại thành đơn thứ hai
         await clear();
-        if (payment.pay_url) {
+        try {
+          const payment = await apiRequest<{ pay_url: string }>("/api/v1/payments/momo/create", {
+            method: "POST",
+            token,
+            body: { order_code: order.order_code },
+          });
           window.location.assign(payment.pay_url);
-          return;
+        } catch (err) {
+          notify({
+            tone: "error",
+            title: "Chưa mở được trang thanh toán MoMo",
+            description: err instanceof ApiError ? err.message : "Bạn có thể thanh toán lại trong trang đơn hàng.",
+          });
+          router.push(`/orders/${order.order_code}?placed=1`);
         }
-        router.push(`/orders/${order.order_code}?placed=1`);
         return;
       }
 
