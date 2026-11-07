@@ -30,8 +30,33 @@ export function PaymentResult() {
     const query = phone ? `?phone=${encodeURIComponent(phone)}` : "";
 
     (async () => {
-      // Ở chế độ MOMO_MOCK backend không nhận IPN thật, nên giả lập IPN; chế độ thật trả 403 và ta chỉ chờ IPN
-      await apiRequest("/api/v1/payments/momo/mock-callback", { method: "POST", body: { order_code: orderCode, result_code: 0 } }).catch(() => null);
+      // Nếu URL chuyển về từ MoMo thật có đầy đủ chữ ký số HMAC-SHA256, gửi ngay về endpoint IPN để xác nhận tức thì
+      // (phòng trường hợp webhook từ MoMo gọi sang Railway bị trễ hoặc bị chặn mạng)
+      const signature = params.get("signature");
+      const transId = params.get("transId");
+      if (signature && transId) {
+        await apiRequest("/api/v1/payments/momo/ipn", {
+          method: "POST",
+          body: {
+            partnerCode: params.get("partnerCode") ?? "MOMO",
+            orderId: orderCode,
+            requestId: params.get("requestId") ?? "",
+            amount: Number(params.get("amount") ?? 0),
+            orderInfo: params.get("orderInfo") ?? "",
+            orderType: params.get("orderType") ?? "momo_wallet",
+            transId,
+            resultCode: Number(params.get("resultCode") ?? 0),
+            message: params.get("message") ?? "",
+            payType: params.get("payType") ?? "qr",
+            responseTime: Number(params.get("responseTime") ?? 0),
+            extraData: params.get("extraData") ?? "",
+            signature,
+          },
+        }).catch(() => null);
+      } else {
+        // Ở chế độ MOMO_MOCK hoặc Fallback Mock, gọi mock-callback để hoàn tất IPN
+        await apiRequest("/api/v1/payments/momo/mock-callback", { method: "POST", body: { order_code: orderCode, result_code: 0 } }).catch(() => null);
+      }
       for (let attempt = 0; attempt < 8 && !cancelled; attempt++) {
         try {
           const order = await apiRequest<Order>(`/api/v1/orders/${encodeURIComponent(orderCode)}${query}`, { token });
@@ -50,7 +75,7 @@ export function PaymentResult() {
     return () => {
       cancelled = true;
     };
-  }, [ready, success, orderCode, token, router]);
+  }, [ready, success, orderCode, params, token, router]);
 
   const retry = async () => {
     setRetrying(true);
