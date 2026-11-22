@@ -1,8 +1,5 @@
-"use client";
-
-import { useEffect, useState, type ReactElement } from "react";
-import { apiRequest, getApiUrl } from "@/lib/api";
-import { cx } from "@/lib/format";
+import type { ReactElement } from "react";
+import { getApiUrl } from "@/lib/api";
 import { buttonClass } from "@/components/ui/styles";
 
 type Provider = "google" | "facebook";
@@ -28,26 +25,15 @@ function FacebookLogo() {
 }
 
 const LABELS: Record<Provider, { label: string; Logo: () => ReactElement }> = {
-  google: { label: "Tiếp tục với Google", Logo: GoogleLogo },
-  facebook: { label: "Tiếp tục với Facebook", Logo: FacebookLogo },
+  google: { label: "Google", Logo: GoogleLogo },
+  facebook: { label: "Facebook", Logo: FacebookLogo },
 };
 
-/** Nút đăng nhập Google/Facebook. Chuyển cả trang sang backend (luồng OAuth phía server), không cần SDK của bên thứ ba. */
+/**
+ * Nút đăng nhập Google/Facebook, luôn hiện đủ 2 nút. Chuyển cả trang sang backend (luồng OAuth phía server).
+ * Provider nào chưa cấu hình thì backend trả về /login?oauth_error=... và form hiện thông báo lỗi.
+ */
 export function SocialLogin({ next }: { next?: string | null }) {
-  // null = đang hỏi backend; provider nào chưa cấu hình thì ẩn nút
-  const [enabled, setEnabled] = useState<Record<Provider, boolean> | null>(null);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    apiRequest<Record<Provider, boolean>>("/api/v1/auth/oauth/providers", { signal: ctrl.signal })
-      .then(setEnabled)
-      .catch(() => setEnabled({ google: false, facebook: false }));
-    return () => ctrl.abort();
-  }, []);
-
-  const providers = (["google", "facebook"] as const).filter((p) => enabled?.[p]);
-  if (enabled && providers.length === 0) return null;
-
   const hrefFor = (p: Provider) => {
     const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "";
     const qs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
@@ -56,23 +42,21 @@ export function SocialLogin({ next }: { next?: string | null }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {enabled === null
-          ? [0, 1].map((i) => <div key={i} className="h-12 animate-pulse rounded-sm bg-muted" />)
-          : providers.map((p) => {
-              const { label, Logo } = LABELS[p];
-              return (
-                <a key={p} href={hrefFor(p)} className={buttonClass("secondary", "lg", cx("min-w-0 px-4", providers.length === 1 && "sm:col-span-2"))}>
-                  <Logo />
-                  <span className="min-w-0 truncate">{label}</span>
-                </a>
-              );
-            })}
-      </div>
       <div className="flex items-center gap-3 text-xs text-ink-3">
         <span className="h-px flex-1 bg-line" />
-        hoặc dùng số điện thoại
+        hoặc tiếp tục với
         <span className="h-px flex-1 bg-line" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(["google", "facebook"] as const).map((p) => {
+          const { label, Logo } = LABELS[p];
+          return (
+            <a key={p} href={hrefFor(p)} className={buttonClass("secondary", "lg", "min-w-0 px-4")}>
+              <Logo />
+              <span className="min-w-0 truncate">{label}</span>
+            </a>
+          );
+        })}
       </div>
     </div>
   );
