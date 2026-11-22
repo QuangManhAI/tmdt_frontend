@@ -5,16 +5,19 @@ import type { Product } from "@/lib/types";
 export const MARTIAL_ARTS: Array<{ id: string; label: string; short: string }> = [
   { id: "vovinam", label: "Vovinam", short: "Vovinam" },
   { id: "taekwondo", label: "Taekwondo", short: "Taekwondo" },
-  { id: "karate", label: "Karatedo", short: "Karate" },
+  { id: "karate", label: "Karate", short: "Karate" },
   { id: "vo_co_truyen", label: "Võ cổ truyền", short: "Cổ truyền" },
 ];
 
+/** Mã môn võ cho phụ kiện dùng được mọi môn (túi, balo, băng quấn tay). Không nằm trong menu theo môn. */
+export const SHARED_ART = { id: "chung", label: "Dùng chung", short: "Dùng chung" };
+
 export const CATEGORIES: Array<{ id: string; label: string }> = [
   { id: "vo_phuc", label: "Võ phục" },
-  { id: "dai", label: "Đai" },
+  { id: "dai", label: "Đai võ thuật" },
   { id: "bao_ho", label: "Bảo hộ & giáp" },
   { id: "tui_dung", label: "Túi & balo" },
-  { id: "phu_kien", label: "Phụ kiện & binh khí" },
+  { id: "phu_kien", label: "Phụ kiện tập luyện" },
 ];
 
 export const BELT_RANKS: Array<{ id: string; label: string }> = [
@@ -27,10 +30,10 @@ export const BELT_RANKS: Array<{ id: string; label: string }> = [
 ];
 
 export const PRICE_RANGES: Array<{ id: string; label: string; min?: number; max?: number }> = [
-  { id: "under-100k", label: "Dưới 100.000₫", max: 99999 },
-  { id: "100k-300k", label: "100.000₫ - 300.000₫", min: 100000, max: 299999 },
-  { id: "300k-500k", label: "300.000₫ - 500.000₫", min: 300000, max: 500000 },
-  { id: "over-500k", label: "Trên 500.000₫", min: 500001 },
+  { id: "under-50k", label: "Dưới 50.000₫", max: 49999 },
+  { id: "50k-100k", label: "50.000₫ - 100.000₫", min: 50000, max: 100000 },
+  { id: "100k-200k", label: "100.000₫ - 200.000₫", min: 100001, max: 200000 },
+  { id: "over-200k", label: "Trên 200.000₫", min: 200001 },
 ];
 
 export const SORT_OPTIONS: Array<{ id: string; label: string }> = [
@@ -44,7 +47,7 @@ export const SORT_OPTIONS: Array<{ id: string; label: string }> = [
 const lookup = (list: Array<{ id: string; label: string }>, id?: string | null) =>
   list.find((item) => item.id === id)?.label ?? "";
 
-export const martialArtLabel = (id?: string | null) => lookup(MARTIAL_ARTS, id);
+export const martialArtLabel = (id?: string | null) => lookup([...MARTIAL_ARTS, SHARED_ART], id);
 export const categoryLabel = (id?: string | null) => lookup(CATEGORIES, id);
 export const beltLabel = (id?: string | null) => lookup(BELT_RANKS, id);
 

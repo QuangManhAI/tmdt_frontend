@@ -28,7 +28,6 @@ export const NAV_ITEMS: NavItem[] = [
         { href: `/products?martial_art=${m.id}&category=vo_phuc`, label: `Võ phục ${m.label}` },
         { href: `/products?martial_art=${m.id}&category=dai`, label: "Đai các cấp" },
         { href: `/products?martial_art=${m.id}&category=bao_ho`, label: "Bảo hộ & giáp" },
-        { href: `/products?martial_art=${m.id}&category=tui_dung`, label: "Túi & balo" },
         { href: `/products?martial_art=${m.id}`, label: `Tất cả ${m.label}` },
       ],
     })),

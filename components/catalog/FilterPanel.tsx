@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CheckIcon } from "@phosphor-icons/react/ssr";
-import { BELT_RANKS, CATEGORIES, MARTIAL_ARTS, PRICE_RANGES } from "@/lib/catalog";
+import { BELT_RANKS, CATEGORIES, MARTIAL_ARTS, PRICE_RANGES, SHARED_ART } from "@/lib/catalog";
 import { cx } from "@/lib/format";
 import type { CatalogQuery } from "@/lib/server-data";
 import type { CatalogFacets } from "@/lib/types";
@@ -70,7 +70,7 @@ export function FilterPanel({ query, facets }: { query: CatalogQuery; facets: Ca
         title="Môn võ"
         param="martial_art"
         query={query}
-        options={MARTIAL_ARTS.map((m) => ({ id: m.id, label: m.label, count: martialCounts.get(m.id) }))}
+        options={[...MARTIAL_ARTS, SHARED_ART].map((m) => ({ id: m.id, label: m.label, count: martialCounts.get(m.id) }))}
       />
       <FilterGroup
         title="Loại sản phẩm"

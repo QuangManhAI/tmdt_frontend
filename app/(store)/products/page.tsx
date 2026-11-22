@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
-import { BELT_RANKS, CATEGORIES, MARTIAL_ARTS, PRICE_RANGES, SORT_OPTIONS, categoryLabel, martialArtLabel } from "@/lib/catalog";
+import { BELT_RANKS, CATEGORIES, PRICE_RANGES, SORT_OPTIONS, categoryLabel, martialArtLabel } from "@/lib/catalog";
 import { cx } from "@/lib/format";
 import { getFacets, getProducts, parseCatalogQuery, type CatalogQuery } from "@/lib/server-data";
 import { container } from "@/components/ui/styles";
@@ -33,7 +33,7 @@ function catalogTitle(q: CatalogQuery): string {
 function ActiveChips({ q }: { q: CatalogQuery }) {
   const chips = [
     q.search && { key: "search", label: `“${q.search}”` },
-    q.martial_art && { key: "martial_art", label: MARTIAL_ARTS.find((m) => m.id === q.martial_art)?.label ?? q.martial_art },
+    q.martial_art && { key: "martial_art", label: martialArtLabel(q.martial_art) || q.martial_art },
     q.category && { key: "category", label: CATEGORIES.find((c) => c.id === q.category)?.label ?? q.category },
     q.belt_rank && { key: "belt_rank", label: BELT_RANKS.find((b) => b.id === q.belt_rank)?.label ?? q.belt_rank },
     q.price && { key: "price", label: PRICE_RANGES.find((p) => p.id === q.price)?.label ?? q.price },

@@ -19,7 +19,7 @@ import { sectionTitle } from "@/components/ui/styles";
 const ITEMS = [
   { label: "Vovinam", href: "/products?martial_art=vovinam", icon: PersonSimpleTaiChiIcon },
   { label: "Taekwondo", href: "/products?martial_art=taekwondo", icon: PersonSimpleThrowIcon },
-  { label: "Karatedo", href: "/products?martial_art=karate", icon: HandFistIcon },
+  { label: "Karate", href: "/products?martial_art=karate", icon: HandFistIcon },
   { label: "Võ cổ truyền", href: "/products?martial_art=vo_co_truyen", icon: SwordIcon },
   { label: "Võ phục", href: "/products?category=vo_phuc", icon: CoatHangerIcon },
   { label: "Đai các cấp", href: "/products?category=dai", icon: MedalIcon },

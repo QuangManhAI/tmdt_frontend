@@ -31,7 +31,7 @@ function TeamSlide() {
       <div className="relative mx-auto flex h-full max-w-[1360px] flex-col justify-center px-6 sm:px-10 lg:px-16">
         <p className="w-fit rounded-sm bg-accent px-3 py-1 text-sm font-bold tracking-widest text-on-accent uppercase">Mùa tập mới</p>
         <h2 className="mt-5 max-w-[14ch] text-5xl leading-[0.95] font-bold text-on-navy uppercase italic sm:text-6xl lg:text-7xl">Võ phục chuẩn liên đoàn</h2>
-        <p className="mt-5 max-w-md text-lg text-on-navy/85">Vovinam, Taekwondo, Karatedo, Võ cổ truyền. Tư vấn size miễn phí, thêu tên theo yêu cầu.</p>
+        <p className="mt-5 max-w-md text-lg text-on-navy/85">Vovinam, Taekwondo, Karate, Võ cổ truyền. Tư vấn size miễn phí, thêu tên theo yêu cầu.</p>
         <div className="mt-8">
           <ShopButton href="/products?category=vo_phuc" />
         </div>
