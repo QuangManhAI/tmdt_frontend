@@ -208,8 +208,19 @@ export interface Order {
   status: string;
   items: OrderItem[];
   tracking_code?: string | null;
+  /** MockShipping hoặc GHN */
+  carrier?: string | null;
+  shipment?: Shipment | null;
   status_history: OrderStatusHistoryItem[];
   created_at: string;
+}
+
+export interface Shipment {
+  status: string;
+  status_label?: string | null;
+  expected_delivery_time?: string | null;
+  tracking_url?: string | null;
+  events: { status: string; status_label?: string | null; time: string }[];
 }
 
 export interface SizeRecommendation {

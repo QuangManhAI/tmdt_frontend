@@ -351,6 +351,7 @@ function Orders({ token }: { token: string }) {
                   <td className="px-3 py-3.5 text-right font-medium text-ink tabular">{formatVND(o.total_amount)}</td>
                   <td className="px-3 py-3.5">
                     <StatusBadge status={o.status} />
+                    {o.shipment && <p className="mt-1 text-[12px] text-ink-3 tabular">{o.carrier} {o.tracking_code}: {o.shipment.status_label}</p>}
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1.5">

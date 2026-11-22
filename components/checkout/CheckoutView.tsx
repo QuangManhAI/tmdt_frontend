@@ -105,6 +105,8 @@ function CheckoutForm({ user, onPlacing }: { user: AuthUser | null; onPlacing: (
   const [errors, setErrors] = useState<Errors>({});
   const [payment, setPayment] = useState<"COD" | "MoMo">("COD");
   const [quote, setQuote] = useState<{ key: string; fee: number } | null>(null);
+  const [quoteWard, setQuoteWard] = useState("");
+  const [wards, setWards] = useState<{ province: string; list: string[] } | null>(null);
   const [voucherInput, setVoucherInput] = useState("");
   const [voucherState, setVoucher] = useState<{ code: string; discount: number; subtotal: number } | null>(null);
   const [voucherError, setVoucherError] = useState<string | null>(null);
@@ -137,15 +139,35 @@ function CheckoutForm({ user, onPlacing }: { user: AuthUser | null; onPlacing: (
   const method = mustPrepay ? "MoMo" : payment;
   // Mã giảm giá chỉ còn hiệu lực khi giỏ hàng chưa đổi so với lúc kiểm tra
   const voucher = voucherState && voucherState.subtotal === cart.subtotal ? voucherState : null;
-  const quoteKey = form.city_province && cart.subtotal > 0 ? `${form.city_province}|${cart.subtotal}` : null;
+  const quoteKey = form.city_province && cart.subtotal > 0 ? [form.city_province, quoteWard, cart.subtotal, cart.total_items].join("|") : null;
   const shippingFee = quote && quote.key === quoteKey ? quote.fee : null;
+  const wardOptions = wards && wards.province === form.city_province ? wards.list : [];
 
-  // Báo phí giao hàng theo tỉnh, cùng công thức với lúc tạo đơn
+  // Phường khách đang gõ: chờ ngừng gõ rồi mới báo phí lại
+  useEffect(() => {
+    const t = setTimeout(() => setQuoteWard(form.ward.trim()), 600);
+    return () => clearTimeout(t);
+  }, [form.ward]);
+
+  // Danh sách phường, xã theo tỉnh (danh mục của đơn vị vận chuyển) để gợi ý đúng tên
+  useEffect(() => {
+    const province = form.city_province;
+    if (!province) return;
+    const controller = new AbortController();
+    apiRequest<string[]>(`/api/v1/shipping/wards?${new URLSearchParams({ province })}`, { signal: controller.signal })
+      .then((list) => setWards({ province, list }))
+      .catch(() => {
+        // Không có gợi ý thì khách vẫn tự gõ tên phường
+      });
+    return () => controller.abort();
+  }, [form.city_province]);
+
+  // Báo phí giao hàng theo tỉnh + phường, cùng công thức với lúc tạo đơn
   useEffect(() => {
     if (!quoteKey) return;
     const controller = new AbortController();
-    const [city, subtotal] = quoteKey.split("|");
-    const params = new URLSearchParams({ city_province: city, subtotal });
+    const [city, ward, subtotal, quantity] = quoteKey.split("|");
+    const params = new URLSearchParams({ city_province: city, ward, subtotal, quantity });
     apiRequest<{ shipping_fee: number }>(`/api/v1/orders/shipping-quote?${params}`, { signal: controller.signal })
       .then((d) => setQuote({ key: quoteKey, fee: d.shipping_fee }))
       .catch(() => {
@@ -311,7 +333,23 @@ function CheckoutForm({ user, onPlacing }: { user: AuthUser | null; onPlacing: (
               </select>
               {errors.city_province && <p className="text-sm text-accent-text">{errors.city_province}</p>}
             </div>
-            <Field id="checkout-ward" label="Phường, xã" value={form.ward} onChange={(e) => set("ward")(e.target.value)} autoComplete="address-level2" error={errors.ward} />
+            <Field
+              id="checkout-ward"
+              label="Phường, xã"
+              value={form.ward}
+              onChange={(e) => set("ward")(e.target.value)}
+              autoComplete="address-level2"
+              list={wardOptions.length ? "checkout-ward-options" : undefined}
+              hint={wardOptions.length ? "Theo địa giới mới, chọn trong danh sách gợi ý" : undefined}
+              error={errors.ward}
+            />
+            {wardOptions.length > 0 && (
+              <datalist id="checkout-ward-options">
+                {wardOptions.map((w) => (
+                  <option key={w} value={w} />
+                ))}
+              </datalist>
+            )}
           </div>
           <Field id="checkout-street_address" label="Số nhà, tên đường" value={form.street_address} onChange={(e) => set("street_address")(e.target.value)} autoComplete="street-address" error={errors.street_address} />
           <div className="flex flex-col gap-2">

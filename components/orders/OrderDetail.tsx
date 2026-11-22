@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { CheckCircleIcon, CheckIcon, CircleNotchIcon, CopyIcon, StarIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon, CheckCircleIcon, CheckIcon, CircleNotchIcon, CopyIcon, StarIcon, TruckIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { apiRequest, ApiError } from "@/lib/api";
 import { ORDER_STATUS, orderStatusLabel } from "@/lib/catalog";
-import { cx, formatDateTime, formatVND, isValidVNPhone, normalizePhone } from "@/lib/format";
+import { cx, formatDate, formatDateTime, formatVND, isValidVNPhone, normalizePhone } from "@/lib/format";
 import { getOrderPhone, saveRecentOrder } from "@/lib/recent-orders";
 import type { Order, ReviewableItem } from "@/lib/types";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -390,12 +390,14 @@ export function OrderDetail({ code, justPlaced }: { code: string; justPlaced: bo
             <p className="mt-3 font-medium text-ink">{order.customer_name}</p>
             <p className="text-ink-2 tabular">{order.customer_phone}</p>
             <p className="mt-1 text-ink-2">{order.shipping_address_full}</p>
-            {order.tracking_code && (
+            {order.tracking_code && !order.shipment && (
               <p className="mt-3 text-ink-2">
                 Mã vận đơn: <span className="font-medium text-ink tabular">{order.tracking_code}</span>
               </p>
             )}
           </section>
+
+          {order.shipment && order.tracking_code && <ShipmentCard order={order} />}
 
           <div className="flex flex-col gap-2">
             {order.status === "pending_payment" && order.payment_method.toUpperCase() !== "COD" && (
@@ -417,5 +419,42 @@ export function OrderDetail({ code, justPlaced }: { code: string; justPlaced: bo
         </div>
       </div>
     </div>
+  );
+}
+
+const CARRIER_NAME: Record<string, string> = { GHN: "Giao Hàng Nhanh", MockShipping: "Đơn vị vận chuyển" };
+
+/** Hành trình vận đơn: trạng thái mới nhất từ đơn vị vận chuyển, ngày giao dự kiến, link tra cứu. */
+function ShipmentCard({ order }: { order: Order }) {
+  const shipment = order.shipment!;
+  const events = [...shipment.events].reverse();
+  const delivered = shipment.status === "delivered";
+  return (
+    <section className="rounded-md border border-line bg-surface p-5 text-sm">
+      <h2 className="flex items-center gap-2 font-semibold text-ink">
+        <TruckIcon className="size-5 text-ink-3" aria-hidden /> Vận chuyển
+      </h2>
+      <p className="mt-3 text-ink-2">
+        {CARRIER_NAME[order.carrier ?? ""] ?? order.carrier}, mã vận đơn <span className="font-medium text-ink tabular">{order.tracking_code}</span>
+      </p>
+      <p className={cx("mt-2 font-medium", delivered ? "text-success" : "text-ink")}>{shipment.status_label ?? shipment.status}</p>
+      {!delivered && shipment.expected_delivery_time && formatDate(shipment.expected_delivery_time) && (
+        <p className="text-ink-2">Dự kiến giao: {formatDate(shipment.expected_delivery_time)}</p>
+      )}
+      {events.length > 1 && (
+        <ol className="mt-3 flex flex-col gap-1.5 border-l border-line pl-3">
+          {events.map((e, i) => (
+            <li key={`${e.status}-${i}`} className={i === 0 ? "text-ink" : "text-ink-3"}>
+              {e.status_label ?? e.status} <span className="text-[13px] text-ink-3">· {formatDateTime(e.time)}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+      {shipment.tracking_url && (
+        <a href={shipment.tracking_url} target="_blank" rel="noopener noreferrer" className={buttonClass("secondary", "sm", "mt-4")}>
+          Xem hành trình chi tiết <ArrowSquareOutIcon className="size-4" />
+        </a>
+      )}
+    </section>
   );
 }
