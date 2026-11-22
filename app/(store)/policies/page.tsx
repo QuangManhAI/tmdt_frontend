@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cx } from "@/lib/format";
 import { container } from "@/components/ui/styles";
-import { HOTLINE } from "@/components/site/nav";
+import { getStoreInfo } from "@/lib/server-data";
 
 export const metadata: Metadata = {
   title: "Chính sách",
@@ -48,7 +48,8 @@ const SECTIONS = [
   },
 ];
 
-export default function PoliciesPage() {
+export default async function PoliciesPage() {
+  const store = await getStoreInfo();
   return (
     <div className={cx(container, "grid gap-12 py-8 lg:grid-cols-[220px_1fr] lg:gap-16 lg:py-12")}>
       <nav aria-label="Mục lục chính sách" className="lg:sticky lg:top-24 lg:self-start">
@@ -77,7 +78,7 @@ export default function PoliciesPage() {
           ))}
         </div>
         <p className="mt-12 border-t border-line pt-6 text-sm text-ink-2">
-          Cần hỗ trợ thêm? Gọi hotline {HOTLINE} hoặc{" "}
+          Cần hỗ trợ thêm? Gọi hotline {store.hotline} hoặc{" "}
           <Link href="/orders" className="font-medium text-ink underline underline-offset-4">
             tra cứu đơn hàng
           </Link>

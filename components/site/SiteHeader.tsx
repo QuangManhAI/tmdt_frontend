@@ -23,7 +23,9 @@ import { Logo } from "@/components/site/Logo";
 import { MegaNav } from "@/components/site/MegaNav";
 import { PromoBar } from "@/components/site/PromoBar";
 import { SearchForm } from "@/components/site/SearchForm";
-import { HOTLINE, HOTLINE_TEL, NAV_ITEMS, USP_ITEMS } from "@/components/site/nav";
+import { NAV_ITEMS, USP_ITEMS } from "@/components/site/nav";
+import { telHref } from "@/lib/store-info";
+import { useStoreInfo } from "@/components/providers/StoreInfoProvider";
 import { isStaffRole, useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/providers/CartProvider";
 
@@ -132,6 +134,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchFirst, setSearchFirst] = useState(false);
   const { user, logout } = useAuth();
+  const { hotline } = useStoreInfo();
 
   const openMenu = (search: boolean) => {
     setSearchFirst(search);
@@ -234,8 +237,8 @@ export function SiteHeader() {
               </Link>
             )}
           </div>
-          <a href={`tel:${HOTLINE_TEL}`} className="inline-flex items-center gap-2 text-sm text-ink-2">
-            <PhoneIcon className="size-4" aria-hidden /> Hotline {HOTLINE}
+          <a href={telHref(hotline)} className="inline-flex items-center gap-2 text-sm text-ink-2">
+            <PhoneIcon className="size-4" aria-hidden /> Hotline {hotline}
           </a>
         </div>
       </Drawer>

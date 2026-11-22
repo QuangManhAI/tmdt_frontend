@@ -33,7 +33,7 @@ export default function LoginPage() {
           </Suspense>
         </div>
       </div>
-      <div className="relative hidden overflow-hidden rounded-md bg-muted lg:block">
+      <div className="relative hidden h-[620px] overflow-hidden rounded-md bg-muted lg:sticky lg:top-24 lg:block lg:self-start">
         <Image src={teamImage} alt="" fill sizes="50vw" placeholder="blur" className="object-cover" />
       </div>
     </div>

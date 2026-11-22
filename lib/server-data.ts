@@ -1,6 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { getApiUrl } from "@/lib/api";
 import { PRICE_RANGES } from "@/lib/catalog";
+import { DEFAULT_STORE_INFO, type StoreInfo } from "@/lib/store-info";
 import type { ActiveVoucher, BlogPost, CatalogFacets, ProductDetail, ProductList, Review, SizeChartRow } from "@/lib/types";
 
 /**
@@ -148,4 +149,17 @@ export async function getActiveVouchers(): Promise<Result<ActiveVoucher[]>> {
   if (result.ok) cacheLife("minutes");
   else cacheLife("retry");
   return result;
+}
+
+/** Thông tin cửa hàng cho header / footer. Lỗi thì dùng giá trị mặc định để trang không vỡ. */
+export async function getStoreInfo(): Promise<StoreInfo> {
+  "use cache";
+  cacheTag("settings");
+  const result = await readApi<StoreInfo>("/api/v1/settings/store");
+  if (result.ok) {
+    cacheLife("minutes");
+    return { ...DEFAULT_STORE_INFO, ...result.data };
+  }
+  cacheLife("retry");
+  return DEFAULT_STORE_INFO;
 }

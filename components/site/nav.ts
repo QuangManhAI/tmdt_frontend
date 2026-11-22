@@ -1,7 +1,6 @@
 import { BELT_RANKS, CATEGORIES, MARTIAL_ARTS } from "@/lib/catalog";
 
-export const HOTLINE = "1900 6868";
-export const HOTLINE_TEL = "19006868";
+/* Hotline, địa chỉ, email: lấy từ thông tin cửa hàng (lib/store-info.ts), admin sửa ở trang quản trị. */
 
 export interface NavColumn {
   title: string;

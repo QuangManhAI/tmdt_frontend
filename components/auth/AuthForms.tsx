@@ -169,6 +169,8 @@ export function AuthForms() {
         ))}
       </div>
 
+      <SocialLogin next={next} />
+
       {formError && (
         <p role="alert" className="rounded-lg bg-accent-soft px-4 py-3 text-sm text-accent-text">
           {formError}
@@ -208,8 +210,6 @@ export function AuthForms() {
           </button>
         </form>
       )}
-
-      <SocialLogin next={next} />
     </div>
   );
 }

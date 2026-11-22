@@ -22,6 +22,8 @@ import { buttonClass, container, inputClass } from "@/components/ui/styles";
 import { Logo } from "@/components/site/Logo";
 import { useAdminApi } from "@/components/admin/useAdminApi";
 import { AnalyticsPanel } from "@/components/admin/analytics/AnalyticsPanel";
+import { StoreSettingsPanel } from "@/components/admin/StoreSettingsPanel";
+import { PricePanel } from "@/components/admin/PricePanel";
 
 /** Luồng chuyển trạng thái hợp lệ, khớp VALID_TRANSITIONS ở backend (Mục 6). */
 const NEXT_STATUS: Record<string, string[]> = {
@@ -81,7 +83,7 @@ interface PackingSlip {
   notes?: string | null;
 }
 
-type Tab = "overview" | "analytics" | "orders" | "returns" | "inventory" | "logs";
+type Tab = "overview" | "analytics" | "orders" | "prices" | "returns" | "inventory" | "logs";
 
 const TONE_CLASS = {
   neutral: "bg-muted text-ink-2",
@@ -130,7 +132,7 @@ function TableSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
-function Overview({ token, onGoOrders }: { token: string; onGoOrders: () => void }) {
+function Overview({ token, isAdmin, onGoOrders }: { token: string; isAdmin: boolean; onGoOrders: () => void }) {
   const kpi = useAdminApi<Kpi>("/api/v1/admin/dashboard/kpi", token);
   const orders = useAdminApi<Order[]>("/api/v1/orders", token);
 
@@ -169,6 +171,8 @@ function Overview({ token, onGoOrders }: { token: string; onGoOrders: () => void
           ))}
         </dl>
       )}
+
+      <StoreSettingsPanel token={token} isAdmin={isAdmin} />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Panel
@@ -701,6 +705,7 @@ export function AdminDashboard() {
     { id: "overview", label: "Tổng quan" },
     ...(isAdmin ? [{ id: "analytics" as Tab, label: "Phân tích" }] : []),
     { id: "orders", label: "Đơn hàng" },
+    { id: "prices", label: "Giá sản phẩm" },
     { id: "returns", label: "Đổi size" },
     { id: "inventory", label: "Tồn kho" },
     ...(isAdmin ? [{ id: "logs" as Tab, label: "Nhật ký" }] : []),
@@ -744,9 +749,10 @@ export function AdminDashboard() {
 
       <main className={cx(container, "py-8")}>
         <h1 className="sr-only">Trang quản trị VÕ SPORT</h1>
-        {tab === "overview" && <Overview token={token} onGoOrders={() => setTab("orders")} />}
+        {tab === "overview" && <Overview token={token} isAdmin={isAdmin} onGoOrders={() => setTab("orders")} />}
         {tab === "analytics" && isAdmin && <AnalyticsPanel token={token} />}
         {tab === "orders" && <Orders token={token} />}
+        {tab === "prices" && <PricePanel token={token} />}
         {tab === "returns" && <Returns token={token} />}
         {tab === "inventory" && <Inventory token={token} isAdmin={isAdmin} />}
         {tab === "logs" && isAdmin && <Logs token={token} />}

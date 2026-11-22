@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChatsCircleIcon, GiftIcon } from "@phosphor-icons/react/ssr";
 import { MARTIAL_ARTS } from "@/lib/catalog";
 import { cx } from "@/lib/format";
-import { HOTLINE, HOTLINE_TEL } from "@/components/site/nav";
+import { telHref, type StoreInfo } from "@/lib/store-info";
 
 const COLUMNS = [
   {
@@ -35,7 +35,7 @@ const COLUMNS = [
 
 const PAYMENTS = ["COD", "MoMo"];
 
-export function SiteFooter() {
+export function SiteFooter({ store }: { store: StoreInfo }) {
   return (
     <footer className="mt-24">
       <div className="bg-navy text-on-navy">
@@ -43,8 +43,8 @@ export function SiteFooter() {
           <div className="flex flex-wrap items-center gap-4 md:justify-center">
             <ChatsCircleIcon weight="light" className="size-9 text-accent-on-navy" aria-hidden />
             <p className="text-[15px] font-semibold tracking-wide uppercase">VÕ SPORT luôn lắng nghe bạn</p>
-            <a href={`tel:${HOTLINE_TEL}`} className="rounded-sm bg-on-navy px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-accent-on-navy">
-              Gọi {HOTLINE}
+            <a href={telHref(store.hotline)} className="rounded-sm bg-on-navy px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-accent-on-navy">
+              Gọi {store.hotline}
             </a>
           </div>
           <div className="hidden h-12 w-px bg-on-navy/25 md:block" aria-hidden />
@@ -61,23 +61,46 @@ export function SiteFooter() {
       <div className="bg-surface">
         <div className="mx-auto grid max-w-[1360px] gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] lg:px-8">
           <div className="text-[15px] leading-relaxed text-ink-2">
-            <h2 className="text-base font-bold tracking-wide text-heading uppercase">VÕ SPORT, võ phục và trang bị võ thuật</h2>
+            <h2 className="text-base font-bold tracking-wide text-heading uppercase">
+              {store.store_name}, {store.tagline.toLowerCase()}
+            </h2>
             <p className="mt-3">
-              <span className="font-semibold text-ink">Cửa hàng:</span> Số 123 Võ Văn Tần, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh
+              <span className="font-semibold text-ink">Cửa hàng:</span>{" "}
+              {store.map_url ? (
+                <a href={store.map_url} target="_blank" rel="noopener noreferrer" className="hover:text-accent-text">
+                  {store.address}
+                </a>
+              ) : (
+                store.address
+              )}
             </p>
             <p className="mt-2">
               <span className="font-semibold text-ink">Tổng đài:</span>{" "}
-              <a href={`tel:${HOTLINE_TEL}`} className="hover:text-accent-text">
-                {HOTLINE}
-              </a>{" "}
-              (8:00 - 21:00)
+              <a href={telHref(store.hotline)} className="hover:text-accent-text">
+                {store.hotline}
+              </a>
+              {store.support_hours ? ` (${store.support_hours})` : ""}
             </p>
             <p className="mt-2">
               <span className="font-semibold text-ink">Email:</span>{" "}
-              <a href="mailto:lienhe@vosport.vn" className="hover:text-accent-text">
-                lienhe@vosport.vn
+              <a href={`mailto:${store.email}`} className="hover:text-accent-text">
+                {store.email}
               </a>
             </p>
+            {(store.zalo || store.facebook_url) && (
+              <p className="mt-2 flex flex-wrap gap-x-4">
+                {store.zalo && (
+                  <a href={`https://zalo.me/${store.zalo.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent-text">
+                    <span className="font-semibold text-ink">Zalo:</span> {store.zalo}
+                  </a>
+                )}
+                {store.facebook_url && (
+                  <a href={store.facebook_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-ink hover:text-accent-text">
+                    Fanpage Facebook
+                  </a>
+                )}
+              </p>
+            )}
           </div>
 
           {COLUMNS.map((col) => (
@@ -110,7 +133,7 @@ export function SiteFooter() {
 
         <div className="border-t border-line">
           <div className={cx("mx-auto flex max-w-[1360px] flex-col gap-2 px-4 py-5 text-[13px] text-ink-3 sm:flex-row sm:justify-between sm:px-6 lg:px-8")}>
-            <p>© 2026 VÕ SPORT. Đồ án môn Thương mại điện tử, Nhóm 2. Sản phẩm và giá là dữ liệu mẫu.</p>
+            <p>© 2026 {store.store_name}. Đồ án môn Thương mại điện tử, Nhóm 2. Sản phẩm và giá là dữ liệu mẫu.</p>
             <Link href="/policies" className="hover:text-ink">
               Chính sách mua hàng
             </Link>
