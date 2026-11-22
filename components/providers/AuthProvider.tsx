@@ -22,6 +22,8 @@ interface AuthContextValue {
   ready: boolean;
   login: (phone: string, password: string) => Promise<AuthUser>;
   register: (input: RegisterInput) => Promise<AuthUser>;
+  /** Hoàn tất đăng nhập Google/Facebook: backend trả JWT qua URL, lấy hồ sơ bằng /auth/me rồi lưu phiên. */
+  loginWithToken: (token: string) => Promise<AuthUser>;
   logout: () => void;
 }
 
@@ -95,6 +97,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persist]
   );
 
+  const loginWithToken = useCallback(
+    async (token: string) => {
+      const me = await apiRequest<{ id: string; full_name: string; role: string; phone?: string | null; email?: string | null }>(
+        "/api/v1/auth/me",
+        { token }
+      );
+      const data: AuthUser = {
+        access_token: token,
+        token_type: "bearer",
+        user_id: me.id,
+        full_name: me.full_name,
+        role: me.role,
+        phone: me.phone ?? undefined,
+        email: me.email ?? null,
+      };
+      persist(data);
+      return data;
+    },
+    [persist]
+  );
+
   const logout = useCallback(() => {
     try {
       localStorage.removeItem(TOKEN_KEY);
@@ -107,8 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, token: user?.access_token ?? null, ready, login, register, logout }),
-    [user, ready, login, register, logout]
+    () => ({ user, token: user?.access_token ?? null, ready, login, register, loginWithToken, logout }),
+    [user, ready, login, register, loginWithToken, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -37,6 +37,26 @@
   --heading: #15213d;
   --band: #f3f1ee;
   --shadow-tint: 222 40% 12%;
+
+  /* Biểu đồ (trang quản trị): màu nhóm sản phẩm theo thứ tự cố định, không xoay vòng */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-other: #9a9993;
+  --series-single: #22305a;
+  --series-compare: #9a9993;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-muted: #6b6b75;
+  --chart-critical: #d03b3b;
+  --seq-0: #f1f1f3;
+  --seq-1: #cde2fb;
+  --seq-2: #9ec5f4;
+  --seq-3: #5598e7;
+  --seq-4: #256abf;
+  --seq-5: #104281;
   color-scheme: light;
 }
 
@@ -67,6 +87,25 @@
   --heading: #eef0f5;
   --band: #1a1a1e;
   --shadow-tint: 240 20% 2%;
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-other: #77766f;
+  --series-single: #9fb0de;
+  --series-compare: #77766f;
+  --chart-grid: #2c2c2a;
+  --chart-axis: #383835;
+  --chart-muted: #8d8d97;
+  --chart-critical: #e66767;
+  --seq-0: #222226;
+  --seq-1: #0d366b;
+  --seq-2: #184f95;
+  --seq-3: #256abf;
+  --seq-4: #3987e5;
+  --seq-5: #86b6ef;
   color-scheme: dark;
 }
 

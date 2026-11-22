@@ -11,6 +11,7 @@ import { isStaffRole, useAuth } from "@/components/providers/AuthProvider";
 import { useToast } from "@/components/ui/Toast";
 import { Field } from "@/components/ui/Field";
 import { buttonClass, inputClass, labelClass } from "@/components/ui/styles";
+import { SocialLogin } from "@/components/auth/SocialLogin";
 
 export function PasswordField({ id, label, value, onChange, error, autoComplete }: { id: string; label: string; value: string; onChange: (v: string) => void; error?: string; autoComplete: string }) {
   const [visible, setVisible] = useState(false);
@@ -56,7 +57,8 @@ export function AuthForms() {
   const { notify } = useToast();
   const [tab, setTab] = useState<"login" | "register">(searchParams.get("tab") === "register" ? "register" : "login");
   const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  // Lỗi từ luồng Google/Facebook: backend chuyển về /login?oauth_error=...
+  const [formError, setFormError] = useState<string | null>(searchParams.get("oauth_error"));
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [phone, setPhone] = useState("");
@@ -166,6 +168,8 @@ export function AuthForms() {
           </button>
         ))}
       </div>
+
+      <SocialLogin next={next} />
 
       {formError && (
         <p role="alert" className="rounded-lg bg-accent-soft px-4 py-3 text-sm text-accent-text">

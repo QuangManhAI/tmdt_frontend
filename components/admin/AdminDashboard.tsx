@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { buttonClass, container, inputClass } from "@/components/ui/styles";
 import { Logo } from "@/components/site/Logo";
 import { useAdminApi } from "@/components/admin/useAdminApi";
+import { AnalyticsPanel } from "@/components/admin/analytics/AnalyticsPanel";
 
 /** Luồng chuyển trạng thái hợp lệ, khớp VALID_TRANSITIONS ở backend (Mục 6). */
 const NEXT_STATUS: Record<string, string[]> = {
@@ -80,7 +81,7 @@ interface PackingSlip {
   notes?: string | null;
 }
 
-type Tab = "overview" | "orders" | "returns" | "inventory" | "logs";
+type Tab = "overview" | "analytics" | "orders" | "returns" | "inventory" | "logs";
 
 const TONE_CLASS = {
   neutral: "bg-muted text-ink-2",
@@ -698,6 +699,7 @@ export function AdminDashboard() {
   const isAdmin = user.role === "admin";
   const tabs: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: "Tổng quan" },
+    ...(isAdmin ? [{ id: "analytics" as Tab, label: "Phân tích" }] : []),
     { id: "orders", label: "Đơn hàng" },
     { id: "returns", label: "Đổi size" },
     { id: "inventory", label: "Tồn kho" },
@@ -743,6 +745,7 @@ export function AdminDashboard() {
       <main className={cx(container, "py-8")}>
         <h1 className="sr-only">Trang quản trị VÕ SPORT</h1>
         {tab === "overview" && <Overview token={token} onGoOrders={() => setTab("orders")} />}
+        {tab === "analytics" && isAdmin && <AnalyticsPanel token={token} />}
         {tab === "orders" && <Orders token={token} />}
         {tab === "returns" && <Returns token={token} />}
         {tab === "inventory" && <Inventory token={token} isAdmin={isAdmin} />}
