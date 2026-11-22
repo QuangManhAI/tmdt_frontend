@@ -45,6 +45,7 @@ interface RequestOptions {
   token?: string | null;
   sessionId?: string | null;
   signal?: AbortSignal;
+  headers?: Record<string, string>;
 }
 
 /** Gọi API từ trình duyệt, tự gắn token / mã phiên giỏ hàng và bóc lớp {success, message, data}. */
@@ -53,6 +54,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
   if (options.token) headers.Authorization = `Bearer ${options.token}`;
   if (options.sessionId) headers["X-Session-ID"] = options.sessionId;
+  if (options.headers) Object.assign(headers, options.headers);
 
   let res: Response;
   try {

@@ -24,6 +24,7 @@ import { useAdminApi } from "@/components/admin/useAdminApi";
 import { AnalyticsPanel } from "@/components/admin/analytics/AnalyticsPanel";
 import { StoreSettingsPanel } from "@/components/admin/StoreSettingsPanel";
 import { PricePanel } from "@/components/admin/PricePanel";
+import { ChatInbox, useChatUnread } from "@/components/admin/ChatInbox";
 
 /** Luồng chuyển trạng thái hợp lệ, khớp VALID_TRANSITIONS ở backend (Mục 6). */
 const NEXT_STATUS: Record<string, string[]> = {
@@ -83,7 +84,7 @@ interface PackingSlip {
   notes?: string | null;
 }
 
-type Tab = "overview" | "analytics" | "orders" | "prices" | "returns" | "inventory" | "logs";
+type Tab = "overview" | "analytics" | "orders" | "chat" | "prices" | "returns" | "inventory" | "logs";
 
 const TONE_CLASS = {
   neutral: "bg-muted text-ink-2",
@@ -669,6 +670,7 @@ function Logs({ token }: { token: string }) {
 export function AdminDashboard() {
   const { user, token, ready, logout } = useAuth();
   const [tab, setTab] = useState<Tab>("overview");
+  const chatUnread = useChatUnread(user && isStaffRole(user.role) ? token : null);
 
   if (!ready) {
     return (
@@ -705,6 +707,7 @@ export function AdminDashboard() {
     { id: "overview", label: "Tổng quan" },
     ...(isAdmin ? [{ id: "analytics" as Tab, label: "Phân tích" }] : []),
     { id: "orders", label: "Đơn hàng" },
+    { id: "chat", label: "Tin nhắn" },
     { id: "prices", label: "Giá sản phẩm" },
     { id: "returns", label: "Đổi size" },
     { id: "inventory", label: "Tồn kho" },
@@ -742,6 +745,11 @@ export function AdminDashboard() {
               )}
             >
               {t.label}
+              {t.id === "chat" && chatUnread > 0 && (
+                <span className="ml-1.5 inline-grid min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] font-bold text-on-accent tabular">
+                  {chatUnread > 99 ? "99+" : chatUnread}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -752,6 +760,7 @@ export function AdminDashboard() {
         {tab === "overview" && <Overview token={token} isAdmin={isAdmin} onGoOrders={() => setTab("orders")} />}
         {tab === "analytics" && isAdmin && <AnalyticsPanel token={token} />}
         {tab === "orders" && <Orders token={token} />}
+        {tab === "chat" && <ChatInbox token={token} />}
         {tab === "prices" && <PricePanel token={token} />}
         {tab === "returns" && <Returns token={token} />}
         {tab === "inventory" && <Inventory token={token} isAdmin={isAdmin} />}

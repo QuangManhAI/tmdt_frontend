@@ -2,17 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CaretUpIcon, PhoneIcon } from "@phosphor-icons/react";
+import { CaretUpIcon } from "@phosphor-icons/react";
 import { cx } from "@/lib/format";
-import { telHref } from "@/lib/store-info";
-import { useStoreInfo } from "@/components/providers/StoreInfoProvider";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 /**
- * Nút nổi: gọi hotline (góc trái), lên đầu trang (góc phải, chỉ hiện khi đã cuộn khỏi đầu trang)
+ * Nút nổi: chat với cửa hàng (góc trái), lên đầu trang (góc phải, chỉ hiện khi đã cuộn khỏi đầu trang)
  * và thẻ dọc "Mã giảm giá" ở mép phải. Phát hiện cuộn bằng IntersectionObserver, không nghe sự kiện scroll.
  */
 export function FloatingWidgets() {
-  const { hotline } = useStoreInfo();
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
@@ -25,15 +23,7 @@ export function FloatingWidgets() {
 
   return (
     <>
-      <a
-        href={telHref(hotline)}
-        className="fixed bottom-5 left-5 z-30 hidden size-14 sm:grid place-items-center rounded-full bg-navy text-on-navy shadow-lift transition-transform duration-300 ease-out-soft hover:scale-105"
-        aria-label={`Gọi hotline ${hotline}`}
-        title={`Hotline ${hotline}`}
-      >
-        <PhoneIcon weight="fill" className="size-6" />
-        <span className="absolute right-0.5 bottom-0.5 size-3 rounded-full border-2 border-navy bg-success" aria-hidden />
-      </a>
+      <ChatWidget />
 
       <button
         type="button"
