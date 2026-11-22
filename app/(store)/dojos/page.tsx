@@ -10,6 +10,7 @@ import studentsImage from "@/public/vo-sinh-vovinam.jpg";
 export const metadata: Metadata = {
   title: "Đồng phục võ đường",
   description: "Đặt đồng phục võ phục cho câu lạc bộ, võ đường với giá sỉ theo số lượng. Phụ huynh tự đặt size qua đường dẫn, giao tận võ đường.",
+  alternates: { canonical: "/dojos" },
 };
 
 const FLOW = [

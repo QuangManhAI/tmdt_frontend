@@ -7,6 +7,7 @@ import { getStoreInfo } from "@/lib/server-data";
 export const metadata: Metadata = {
   title: "Chính sách",
   description: "Chính sách đổi size, thanh toán, giao hàng, bảo mật thông tin và điều khoản mua hàng tại VÕ SPORT.",
+  alternates: { canonical: "/policies" },
 };
 
 const SECTIONS = [

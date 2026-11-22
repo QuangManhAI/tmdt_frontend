@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { cx, formatDate } from "@/lib/format";
 import { getBlogPost } from "@/lib/server-data";
+import { JsonLd, absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
+import { SITE_BASE_URL } from "@/lib/api";
 import { buttonClass, container } from "@/components/ui/styles";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ApiUnavailable } from "@/components/home/ProductSections";
@@ -31,8 +33,25 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
   const post = result.data;
   const paragraphs = (post.content || post.summary).split(/\n{2,}|\r\n\r\n/).filter(Boolean);
 
+  const cover = absoluteUrl(post.thumbnail || "/banner-bieu-dien.jpg");
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.summary,
+    image: [cover],
+    datePublished: post.created_at || undefined,
+    dateModified: post.created_at || undefined,
+    inLanguage: "vi-VN",
+    mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+    author: { "@type": "Organization", name: "VÕ SPORT", url: `${SITE_BASE_URL}/` },
+    publisher: { "@id": `${SITE_BASE_URL}/#store` },
+  };
+
   return (
     <article>
+      <JsonLd data={articleLd} />
+      <JsonLd data={breadcrumbJsonLd([["Trang chủ", "/"], ["Cẩm nang võ sinh", "/blog"], [post.title, `/blog/${post.slug}`]])} />
       <header className="mx-auto max-w-3xl">
         <Link href="/blog" className="text-sm text-ink-3 hover:text-ink">
           Cẩm nang võ sinh

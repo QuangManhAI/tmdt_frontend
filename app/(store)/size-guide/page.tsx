@@ -12,6 +12,7 @@ import { SizeChartTabs } from "@/components/size/SizeChartTabs";
 export const metadata: Metadata = {
   title: "Tư vấn size võ phục",
   description: "Tính size võ phục Vovinam, Taekwondo, Karate, Võ cổ truyền theo chiều cao và cân nặng. Bảng size chuẩn và cách đo cho trẻ em, người lớn.",
+  alternates: { canonical: "/size-guide" },
 };
 
 const TIPS = [

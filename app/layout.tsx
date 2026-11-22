@@ -20,12 +20,16 @@ export const metadata: Metadata = {
   description:
     "Võ phục Vovinam, Taekwondo, Karate, Võ cổ truyền đúng quy cách liên đoàn. Tư vấn size theo chiều cao, cân nặng, thêu tên theo yêu cầu và đặt đồng phục cho võ đường.",
   keywords: ["võ phục vovinam", "võ phục taekwondo", "võ phục karate", "võ phục cổ truyền", "đai võ thuật", "tư vấn size võ phục"],
+  applicationName: "VÕ SPORT",
+  formatDetection: { telephone: false },
   openGraph: {
     type: "website",
     locale: "vi_VN",
     siteName: "VÕ SPORT",
     images: [{ url: "/banner-bieu-dien.jpg", width: 1432, height: 593, alt: "Võ sinh Vovinam biểu diễn trong võ phục xanh" }],
   },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
 };
 
 export const viewport: Viewport = {

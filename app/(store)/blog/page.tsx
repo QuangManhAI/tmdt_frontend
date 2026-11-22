@@ -11,6 +11,7 @@ import { ApiUnavailable } from "@/components/home/ProductSections";
 export const metadata: Metadata = {
   title: "Cẩm nang võ sinh",
   description: "Hướng dẫn thắt đai, giặt và bảo quản võ phục, phân biệt quy cách võ phục các môn võ.",
+  alternates: { canonical: "/blog" },
 };
 
 async function PostList() {

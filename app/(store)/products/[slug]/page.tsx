@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { SITE_BASE_URL } from "@/lib/api";
-import { beltLabel, categoryLabel, martialArtLabel, productImageSrc } from "@/lib/catalog";
+import { MARTIAL_ARTS, beltLabel, categoryLabel, martialArtLabel, productImageSrc } from "@/lib/catalog";
 import { cx } from "@/lib/format";
-import { getProductDetail } from "@/lib/server-data";
+import { getProductDetail, getReviews } from "@/lib/server-data";
+import { JsonLd, absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { container } from "@/components/ui/styles";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Price } from "@/components/ui/Price";
@@ -50,6 +51,10 @@ async function ProductContent({ params }: { params: Promise<{ slug: string }> })
   const art = martialArtLabel(product.martial_art_id);
   const meta = [art, beltLabel(product.belt_rank) || categoryLabel(product.category_id)].filter(Boolean).join(" · ");
   const image = productImageSrc(product);
+  // Điểm sao trong dữ liệu cho Google chỉ lấy từ đánh giá thật của người mua (không dùng số liệu mẫu)
+  const reviews = await getReviews(product.id);
+  const realReviews = reviews.ok ? reviews.data : [];
+  const avgRating = realReviews.length ? realReviews.reduce((sum, r) => sum + r.rating, 0) / realReviews.length : 0;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -57,21 +62,57 @@ async function ProductContent({ params }: { params: Promise<{ slug: string }> })
     name: product.name,
     sku: product.id,
     description: product.description,
-    image: image ? [image.startsWith("http") ? image : `${SITE_BASE_URL}${image}`] : undefined,
+    image: image ? [absoluteUrl(image)] : undefined,
     brand: { "@type": "Brand", name: "VÕ SPORT" },
-    aggregateRating: product.review_count > 0 ? { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.review_count } : undefined,
+    category: [art, categoryLabel(product.category_id)].filter(Boolean).join(" > ") || undefined,
+    aggregateRating: realReviews.length
+      ? { "@type": "AggregateRating", ratingValue: Math.round(avgRating * 10) / 10, reviewCount: realReviews.length, bestRating: 5, worstRating: 1 }
+      : undefined,
+    review: realReviews.slice(0, 5).map((r) => ({
+      "@type": "Review",
+      reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5 },
+      author: { "@type": "Person", name: r.user_name || "Khách hàng" },
+      reviewBody: r.comment || undefined,
+      datePublished: r.created_at || undefined,
+    })),
     offers: {
       "@type": "Offer",
       priceCurrency: "VND",
       price: product.price,
+      itemCondition: "https://schema.org/NewCondition",
       availability: product.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: `${SITE_BASE_URL}/products/${product.slug}`,
+      seller: { "@id": `${SITE_BASE_URL}/#store` },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "VN" },
+        shippingRate: { "@type": "MonetaryAmount", value: product.price >= 500000 ? 0 : 30000, currency: "VND" },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 2, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 5, unitCode: "DAY" },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "VN",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 7,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn",
+      },
     },
   };
+  const breadcrumb = breadcrumbJsonLd([
+    ["Trang chủ", "/"],
+    ...(MARTIAL_ARTS.some((m) => m.id === product.martial_art_id) ? [[`Võ phục ${art}`, `/products?martial_art=${product.martial_art_id}`] as [string, string]] : [["Sản phẩm", "/products"] as [string, string]]),
+    [product.name, `/products/${product.slug}`],
+  ]);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumb} />
 
       <nav aria-label="Breadcrumb" className="flex flex-wrap gap-x-2 pt-6 pb-6 text-[13px] text-ink-3 lg:pt-8">
         <Link href="/" className="hover:text-ink">

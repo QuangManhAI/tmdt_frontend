@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
-import { BELT_RANKS, CATEGORIES, PRICE_RANGES, SORT_OPTIONS, categoryLabel, martialArtLabel } from "@/lib/catalog";
+import { BELT_RANKS, CATEGORIES, MARTIAL_ARTS, PRICE_RANGES, SORT_OPTIONS, categoryLabel, martialArtLabel } from "@/lib/catalog";
 import { cx } from "@/lib/format";
 import { getFacets, getProducts, parseCatalogQuery, type CatalogQuery } from "@/lib/server-data";
 import { container } from "@/components/ui/styles";
@@ -13,10 +13,34 @@ import { FilterPanel } from "@/components/catalog/FilterPanel";
 import { MobileFilters, SortSelect } from "@/components/catalog/CatalogControls";
 import { catalogHref, hasActiveFilters } from "@/components/catalog/catalog-url";
 
-export const metadata: Metadata = {
-  title: "Sản phẩm",
-  description: "Võ phục, đai, đồ bảo hộ và phụ kiện cho Vovinam, Taekwondo, Karate, Võ cổ truyền. Lọc theo môn võ, cấp đai và khoảng giá.",
+const ART_DESCRIPTIONS: Record<string, string> = {
+  vovinam: "Võ phục Vovinam xanh đúng quy cách Liên đoàn, đai các cấp và phụ kiện. Tư vấn size theo chiều cao, cân nặng, thêu tên võ sinh, giao toàn quốc.",
+  taekwondo: "Võ phục Taekwondo (dobok) cổ chữ V, đai màu và đồ bảo hộ cho võ sinh. Tư vấn size theo chiều cao, cân nặng, thêu tên, giao toàn quốc.",
+  karate: "Võ phục Karate (karategi) vải dày, đai các cấp và găng bảo hộ. Tư vấn size theo chiều cao, cân nặng, thêu tên, giao toàn quốc.",
+  vo_co_truyen: "Võ phục Võ cổ truyền Việt Nam, đai và phụ kiện tập luyện. Tư vấn size theo chiều cao, cân nặng, thêu tên, giao toàn quốc.",
 };
+
+/** Mỗi môn võ là một trang đích riêng (/products?martial_art=vovinam) để lên Google với từ khóa "võ phục vovinam"...
+ *  Các tổ hợp lọc / sắp xếp / phân trang khác trỏ canonical về trang đích đó; trang kết quả tìm kiếm không index. */
+export async function generateMetadata({ searchParams }: PageProps<"/products">): Promise<Metadata> {
+  const q = parseCatalogQuery(await searchParams);
+  if (q.search) return { title: `Tìm “${q.search}”`, robots: { index: false, follow: true } };
+  const art = MARTIAL_ARTS.find((m) => m.id === q.martial_art);
+  if (art) {
+    const title = `Võ phục ${art.label} chính hãng, đai và phụ kiện`;
+    return {
+      title,
+      description: ART_DESCRIPTIONS[art.id],
+      alternates: { canonical: `/products?martial_art=${art.id}` },
+      openGraph: { title, description: ART_DESCRIPTIONS[art.id] },
+    };
+  }
+  return {
+    title: "Võ phục, đai và phụ kiện võ thuật",
+    description: "Võ phục, đai, đồ bảo hộ và phụ kiện cho Vovinam, Taekwondo, Karate, Võ cổ truyền. Lọc theo môn võ, cấp đai và khoảng giá.",
+    alternates: { canonical: "/products" },
+  };
+}
 
 const PAGE_SIZE = 12;
 
@@ -26,7 +50,7 @@ function catalogTitle(q: CatalogQuery): string {
   const art = martialArtLabel(q.martial_art);
   if (category && art) return `${category} ${art}`;
   if (category) return category;
-  if (art) return `Sản phẩm ${art}`;
+  if (art) return `Võ phục ${art}`;
   return "Tất cả sản phẩm";
 }
 
