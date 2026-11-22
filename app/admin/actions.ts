@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { getApiUrl } from "@/lib/api";
 
-const ALLOWED_TAGS = ["settings", "products"] as const;
+const ALLOWED_TAGS = ["settings", "products", "reviews"] as const;
 type StorefrontTag = (typeof ALLOWED_TAGS)[number];
 
 /**

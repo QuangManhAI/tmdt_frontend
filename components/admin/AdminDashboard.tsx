@@ -25,6 +25,7 @@ import { AnalyticsPanel } from "@/components/admin/analytics/AnalyticsPanel";
 import { StoreSettingsPanel } from "@/components/admin/StoreSettingsPanel";
 import { PricePanel } from "@/components/admin/PricePanel";
 import { ChatInbox, useChatUnread } from "@/components/admin/ChatInbox";
+import { ReviewsPanel } from "@/components/admin/ReviewsPanel";
 
 /** Luồng chuyển trạng thái hợp lệ, khớp VALID_TRANSITIONS ở backend (Mục 6). */
 const NEXT_STATUS: Record<string, string[]> = {
@@ -84,7 +85,7 @@ interface PackingSlip {
   notes?: string | null;
 }
 
-type Tab = "overview" | "analytics" | "orders" | "chat" | "prices" | "returns" | "inventory" | "logs";
+type Tab = "overview" | "analytics" | "orders" | "chat" | "reviews" | "prices" | "returns" | "inventory" | "logs";
 
 const TONE_CLASS = {
   neutral: "bg-muted text-ink-2",
@@ -708,6 +709,7 @@ export function AdminDashboard() {
     ...(isAdmin ? [{ id: "analytics" as Tab, label: "Phân tích" }] : []),
     { id: "orders", label: "Đơn hàng" },
     { id: "chat", label: "Tin nhắn" },
+    { id: "reviews", label: "Đánh giá" },
     { id: "prices", label: "Giá sản phẩm" },
     { id: "returns", label: "Đổi size" },
     { id: "inventory", label: "Tồn kho" },
@@ -761,6 +763,7 @@ export function AdminDashboard() {
         {tab === "analytics" && isAdmin && <AnalyticsPanel token={token} />}
         {tab === "orders" && <Orders token={token} />}
         {tab === "chat" && <ChatInbox token={token} />}
+        {tab === "reviews" && <ReviewsPanel token={token} />}
         {tab === "prices" && <PricePanel token={token} />}
         {tab === "returns" && <Returns token={token} />}
         {tab === "inventory" && <Inventory token={token} isAdmin={isAdmin} />}

@@ -2,21 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowsClockwiseIcon,
-  CaretDownIcon,
-  HandbagSimpleIcon,
-  ListIcon,
-  MagnifyingGlassIcon,
-  NeedleIcon,
-  PackageIcon,
-  PhoneIcon,
-  SignOutIcon,
-  SquaresFourIcon,
-  TruckIcon,
-  UserIcon,
-  UsersThreeIcon,
-} from "@phosphor-icons/react";
+import { ArrowsClockwiseIcon, CaretDownIcon, HandbagSimpleIcon, ListIcon, MagnifyingGlassIcon, NeedleIcon, PackageIcon, PhoneIcon, SignOutIcon, SquaresFourIcon, TruckIcon, UserIcon, UsersThreeIcon, UserCircleIcon, RulerIcon } from "@phosphor-icons/react";
 import { cx } from "@/lib/format";
 import { Drawer } from "@/components/ui/Drawer";
 import { Logo } from "@/components/site/Logo";
@@ -70,8 +56,14 @@ function AccountMenu() {
             <p className="text-[13px] text-ink-3">{user.phone ?? "Thành viên"}</p>
           </div>
           <div className="my-1 h-px bg-line" />
-          <Link role="menuitem" href="/orders" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm text-ink-2 hover:bg-muted hover:text-ink">
+          <Link role="menuitem" href="/account" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm text-ink-2 hover:bg-muted hover:text-ink">
+            <UserCircleIcon className="size-[18px]" aria-hidden /> Tài khoản của tôi
+          </Link>
+          <Link role="menuitem" href="/account?tab=orders" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm text-ink-2 hover:bg-muted hover:text-ink">
             <PackageIcon className="size-[18px]" aria-hidden /> Đơn hàng của tôi
+          </Link>
+          <Link role="menuitem" href="/account?tab=students" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm text-ink-2 hover:bg-muted hover:text-ink">
+            <RulerIcon className="size-[18px]" aria-hidden /> Hồ sơ võ sinh
           </Link>
           {isStaffRole(user.role) && (
             <Link role="menuitem" href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm text-ink-2 hover:bg-muted hover:text-ink">
@@ -222,6 +214,9 @@ export function SiteHeader() {
                 <p className="text-sm text-ink-2">
                   Đang đăng nhập: <span className="font-semibold text-ink">{user.full_name}</span>
                 </p>
+                <Link href="/account" onClick={() => setMenuOpen(false)} className="text-sm font-semibold text-ink">
+                  Tài khoản của tôi
+                </Link>
                 {isStaffRole(user.role) && (
                   <Link href="/admin" className="text-sm font-semibold text-accent-text">
                     Vào trang quản trị

@@ -8,6 +8,7 @@ import { MARTIAL_ARTS, martialArtLabel } from "@/lib/catalog";
 import { cx } from "@/lib/format";
 import type { SizeRecommendation } from "@/lib/types";
 import { buttonClass, inputClass, labelClass } from "@/components/ui/styles";
+import { SaveStudentProfile } from "@/components/size/SaveStudentProfile";
 
 const BUILDS = [
   { id: "lean", label: "Gầy" },
@@ -199,6 +200,14 @@ export function SizeAdvisorForm({ defaultMartialArt = "vovinam", lockMartialArt,
               <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </Link>
           )}
+          <SaveStudentProfile
+            key={`${martialArt}-${height}-${weight}-${result.recommended_size}`}
+            martialArt={martialArt}
+            height={Number(height)}
+            weight={Number(weight)}
+            age={age ? Number(age) : undefined}
+            size={result.recommended_size}
+          />
         </div>
       )}
     </div>

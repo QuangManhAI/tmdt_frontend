@@ -1,4 +1,4 @@
-import { StarIcon } from "@phosphor-icons/react/ssr";
+import { SealCheckIcon, StarIcon } from "@phosphor-icons/react/ssr";
 import { cx, formatDate } from "@/lib/format";
 import { getReviews } from "@/lib/server-data";
 
@@ -41,7 +41,7 @@ export async function ProductReviews({ productId, rating, reviewCount }: { produ
 
       {reviews.length === 0 ? (
         <p className="rounded-md bg-muted px-6 py-8 text-sm text-ink-2">
-          Chưa có nhận xét chi tiết cho sản phẩm này. Sau khi nhận hàng, bạn có thể chia sẻ size đã mua và độ vừa vặn để giúp võ sinh khác chọn đúng.
+          Chưa có nhận xét chi tiết cho sản phẩm này. Sau khi nhận hàng, bạn có thể đánh giá trong trang chi tiết đơn hoặc mục Tài khoản → Đánh giá để giúp võ sinh khác chọn đúng size.
         </p>
       ) : (
         <ul className="flex flex-col divide-y divide-line">
@@ -51,6 +51,11 @@ export async function ProductReviews({ productId, rating, reviewCount }: { produ
                 <span className="font-medium text-ink">{r.user_name}</span>
                 <Stars value={r.rating} />
                 <span className="text-[13px] text-ink-3">{formatDate(r.created_at)}</span>
+                {r.verified_purchase && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-success-soft px-1.5 py-0.5 text-[12px] font-medium text-success">
+                    <SealCheckIcon weight="fill" className="size-3.5" aria-hidden /> Đã mua hàng
+                  </span>
+                )}
               </div>
               <p className="mt-1 text-[13px] text-ink-3">
                 Đã mua {r.bought_size}, {FIT_LABEL[r.size_fit] ?? r.size_fit}

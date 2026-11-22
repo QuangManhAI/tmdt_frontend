@@ -90,7 +90,57 @@ export interface Review {
   comment: string;
   size_fit: "tight" | "fit" | "loose" | string;
   bought_size: string;
+  verified_purchase?: boolean;
   created_at?: string | null;
+  updated_at?: string | null;
+}
+
+/** Sản phẩm khách đã nhận hàng, kèm đánh giá của khách nếu đã viết (GET /reviews/me). */
+export interface ReviewableItem {
+  product_id: string;
+  product_name: string;
+  product_slug?: string | null;
+  image?: string | null;
+  size: string;
+  order_code: string;
+  delivered_at?: string | null;
+  review: (Review & { is_hidden?: boolean }) | null;
+}
+
+export interface DefaultAddress {
+  recipient_name: string;
+  phone: string;
+  street_address: string;
+  ward: string;
+  district: string;
+  city_province: string;
+}
+
+export interface AccountProfile {
+  id: string;
+  full_name: string;
+  phone?: string | null;
+  email?: string | null;
+  role: string;
+  default_address?: DefaultAddress | null;
+  linked_google: boolean;
+  linked_facebook: boolean;
+  created_at?: string | null;
+}
+
+/** Hồ sơ số đo võ sinh (GET /size-advisor/profiles). */
+export interface StudentProfile {
+  id: string;
+  student_name: string;
+  birth_year?: number | null;
+  martial_art: string;
+  height_cm: number;
+  weight_kg: number;
+  recommended_size?: string | null;
+  measured_date: string;
+  days_since_measured: number;
+  needs_remeasure: boolean;
+  remeasure_alert?: string | null;
 }
 
 export interface CartItem {

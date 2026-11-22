@@ -33,7 +33,7 @@ const LABELS: Record<Provider, { label: string; Logo: () => ReactElement }> = {
  * Nút đăng nhập Google/Facebook, luôn hiện đủ 2 nút. Chuyển cả trang sang backend (luồng OAuth phía server).
  * Provider nào chưa cấu hình thì backend trả về /login?oauth_error=... và form hiện thông báo lỗi.
  */
-export function SocialLogin({ next }: { next?: string | null }) {
+export function SocialLogin({ next, divider = true }: { next?: string | null; divider?: boolean }) {
   const hrefFor = (p: Provider) => {
     const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "";
     const qs = safeNext ? `?next=${encodeURIComponent(safeNext)}` : "";
@@ -42,11 +42,13 @@ export function SocialLogin({ next }: { next?: string | null }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-3 text-xs text-ink-3">
-        <span className="h-px flex-1 bg-line" />
-        hoặc tiếp tục với
-        <span className="h-px flex-1 bg-line" />
-      </div>
+      {divider && (
+        <div className="flex items-center gap-3 text-xs text-ink-3">
+          <span className="h-px flex-1 bg-line" />
+          hoặc tiếp tục với
+          <span className="h-px flex-1 bg-line" />
+        </div>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         {(["google", "facebook"] as const).map((p) => {
           const { label, Logo } = LABELS[p];

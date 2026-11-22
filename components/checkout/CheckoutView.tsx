@@ -8,7 +8,7 @@ import { apiRequest, ApiError } from "@/lib/api";
 import { cx, formatVND, isValidVNPhone, normalizePhone } from "@/lib/format";
 import { PROVINCES } from "@/lib/provinces";
 import { saveRecentOrder } from "@/lib/recent-orders";
-import type { AuthUser, Order } from "@/lib/types";
+import type { AccountProfile, AuthUser, Order } from "@/lib/types";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { useToast } from "@/components/ui/Toast";
@@ -111,6 +111,27 @@ function CheckoutForm({ user, onPlacing }: { user: AuthUser | null; onPlacing: (
   const [voucherLoading, setVoucherLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Đã đăng nhập: điền các ô còn trống từ địa chỉ giao hàng mặc định của tài khoản (không ghi đè chữ khách đã nhập)
+  useEffect(() => {
+    if (!token) return;
+    const controller = new AbortController();
+    apiRequest<AccountProfile>("/api/v1/account/profile", { token, signal: controller.signal })
+      .then((p) => {
+        const d = p.default_address;
+        if (!d) return;
+        setForm((f) => ({
+          ...f,
+          recipient_name: f.recipient_name || d.recipient_name,
+          phone: f.phone || d.phone,
+          street_address: f.street_address || d.street_address,
+          ward: f.ward || d.ward,
+          city_province: f.city_province || (PROVINCES.includes(d.city_province) ? d.city_province : ""),
+        }));
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [token]);
 
   const mustPrepay = cart.has_embroidery;
   const method = mustPrepay ? "MoMo" : payment;

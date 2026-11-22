@@ -13,6 +13,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { Field } from "@/components/ui/Field";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { buttonClass } from "@/components/ui/styles";
+import { LoginPrompt } from "@/components/auth/LoginPrompt";
 
 const TONE = {
   neutral: "bg-muted text-ink-2",
@@ -34,14 +35,19 @@ function useRecentOrders() {
   return useMemo(() => (JSON.parse(raw) as string[]).map((code) => ({ code })), [raw]);
 }
 
-function MyOrders({ token }: { token: string }) {
+export function MyOrders({ token }: { token: string }) {
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiRequest<Order[]>("/api/v1/orders", { token })
-      .then(setOrders)
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Không tải được đơn hàng"));
+    const load = () =>
+      apiRequest<Order[]>("/api/v1/orders", { token })
+        .then(setOrders)
+        .catch((err) => setError(err instanceof ApiError ? err.message : "Không tải được đơn hàng"));
+    load();
+    // Đơn đặt khi chưa đăng nhập vừa được gắn vào tài khoản (AuthProvider) thì tải lại danh sách
+    window.addEventListener("orders:claimed", load);
+    return () => window.removeEventListener("orders:claimed", load);
   }, [token]);
 
   if (error) return <p className="text-sm text-accent-text">{error}</p>;
@@ -139,12 +145,11 @@ export function OrderLookup() {
           ) : user && token ? (
             <MyOrders token={token} />
           ) : (
-            <div className="flex flex-col items-start gap-3 rounded-md bg-muted p-6">
-              <p className="text-sm text-ink-2">Đăng nhập để xem toàn bộ đơn hàng và trạng thái giao hàng ở một nơi.</p>
-              <Link href="/login?next=/orders" className={buttonClass("secondary")}>
-                Đăng nhập
-              </Link>
-            </div>
+            <LoginPrompt
+              next="/orders"
+              title="Không lo quên mã đơn"
+              description="Đăng nhập hoặc tạo tài khoản: các đơn đã đặt trên máy này tự được lưu vào tài khoản, lần sau xem lại mọi đơn mà không cần mã đơn."
+            />
           )}
         </div>
       </div>

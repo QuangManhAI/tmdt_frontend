@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { apiRequest } from "@/lib/api";
+import { listRecentOrders } from "@/lib/recent-orders";
 import type { AuthUser } from "@/lib/types";
 
 const TOKEN_KEY = "access_token";
@@ -24,6 +25,8 @@ interface AuthContextValue {
   register: (input: RegisterInput) => Promise<AuthUser>;
   /** Hoàn tất đăng nhập Google/Facebook: backend trả JWT qua URL, lấy hồ sơ bằng /auth/me rồi lưu phiên. */
   loginWithToken: (token: string) => Promise<AuthUser>;
+  /** Cập nhật thông tin phiên sau khi khách sửa hồ sơ (họ tên, SĐT). */
+  updateUser: (patch: Partial<Pick<AuthUser, "full_name" | "phone" | "email">>) => void;
   logout: () => void;
 }
 
@@ -49,6 +52,9 @@ function readSession(): string {
 }
 
 const noopSubscribe = () => () => {};
+
+// Mỗi phiên đăng nhập chỉ gắn đơn một lần (tránh gọi lại mỗi lần render / đổi trang)
+const claimedForToken = new Set<string>();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const session = useSyncExternalStore(subscribe, readSession, () => "\n");
@@ -118,6 +124,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persist]
   );
 
+  const updateUser = useCallback(
+    (patch: Partial<Pick<AuthUser, "full_name" | "phone" | "email">>) => {
+      if (!user) return;
+      persist({ ...user, ...patch });
+    },
+    [user, persist]
+  );
+
+  // Đăng nhập xong: gắn các đơn đã đặt khi chưa đăng nhập trên máy này (mã đơn + SĐT) vào tài khoản
+  const token = user?.access_token ?? null;
+  useEffect(() => {
+    if (!token || claimedForToken.has(token)) return;
+    claimedForToken.add(token);
+    const orders = listRecentOrders().map((o) => ({ code: o.code, phone: o.phone }));
+    if (orders.length === 0) return;
+    apiRequest<{ claimed: string[] }>("/api/v1/account/claim-orders", { method: "POST", token, body: { orders: orders.slice(0, 20) } })
+      .then((res) => {
+        if (res.claimed.length) window.dispatchEvent(new CustomEvent("orders:claimed", { detail: res.claimed }));
+      })
+      .catch(() => claimedForToken.delete(token));
+  }, [token]);
+
   const logout = useCallback(() => {
     try {
       localStorage.removeItem(TOKEN_KEY);
@@ -130,8 +158,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, token: user?.access_token ?? null, ready, login, register, loginWithToken, logout }),
-    [user, ready, login, register, loginWithToken, logout]
+    () => ({ user, token, ready, login, register, loginWithToken, updateUser, logout }),
+    [user, token, ready, login, register, loginWithToken, updateUser, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
