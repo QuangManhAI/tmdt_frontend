@@ -6,7 +6,8 @@ import { formatVND } from "@/lib/format";
 import { getActiveVouchers } from "@/lib/server-data";
 import type { ActiveVoucher } from "@/lib/types";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
-import teamImage from "@/public/vovi.jpg";
+import showImage from "@/public/banner-bieu-dien.jpg";
+import studentsImage from "@/public/vo-sinh-vovinam.jpg";
 import uniformImage from "@/public/mau_1.jpg";
 
 const slideBase = "relative h-[460px] overflow-hidden sm:h-[500px] lg:h-[560px]";
@@ -26,7 +27,7 @@ function ShopButton({ href, label = "Mua ngay" }: { href: string; label?: string
 function TeamSlide() {
   return (
     <div className={slideBase}>
-      <Image src={teamImage} alt="Đội tuyển Vovinam trong võ phục xanh, đai vàng, cầm cờ Việt Nam" fill preload placeholder="blur" sizes="100vw" className="object-cover object-[70%_center]" />
+      <Image src={showImage} alt="Võ sinh Vovinam trong võ phục xanh biểu diễn trên sân khấu" fill preload placeholder="blur" sizes="100vw" className="object-cover object-[60%_center]" />
       <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/55 to-transparent" />
       <div className="relative mx-auto flex h-full max-w-[1360px] flex-col justify-center px-6 sm:px-10 lg:px-16">
         <p className="w-fit rounded-sm bg-accent px-3 py-1 text-sm font-bold tracking-widest text-on-accent uppercase">Mùa tập mới</p>
@@ -79,7 +80,7 @@ function DojoSlide() {
   return (
     <div className={`${slideBase} bg-accent`}>
       <div className="absolute inset-y-0 right-0 hidden w-[52%] [clip-path:polygon(18%_0,100%_0,100%_100%,0_100%)] lg:block">
-        <Image src={teamImage} alt="" fill sizes="52vw" className="object-cover object-center" />
+        <Image src={studentsImage} alt="" fill sizes="52vw" className="object-cover object-center" />
       </div>
       <div className="relative mx-auto flex h-full max-w-[1360px] flex-col justify-center px-6 sm:px-10 lg:px-16">
         <h2 className="max-w-[12ch] text-5xl leading-[0.95] font-bold text-on-accent uppercase italic sm:text-6xl lg:text-7xl">Đồng phục cả võ đường</h2>

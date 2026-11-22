@@ -25,7 +25,7 @@ async function PostList() {
           <Link href={`/blog/${post.slug}`} className="group flex flex-col gap-4">
             <div className="overflow-hidden rounded-md bg-muted">
               <Image
-                src={post.thumbnail || "/vovi.jpg"}
+                src={post.thumbnail || "/vo-sinh-vovinam.jpg"}
                 alt=""
                 width={1376}
                 height={997}

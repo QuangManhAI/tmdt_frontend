@@ -5,7 +5,7 @@ import { cx } from "@/lib/format";
 import { container } from "@/components/ui/styles";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AuthForms } from "@/components/auth/AuthForms";
-import teamImage from "@/public/vovi.jpg";
+import studentsImage from "@/public/vo-sinh-vovinam.jpg";
 
 export const metadata: Metadata = {
   title: "Đăng nhập",
@@ -34,7 +34,7 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="relative hidden h-[620px] overflow-hidden rounded-md bg-muted lg:sticky lg:top-24 lg:block lg:self-start">
-        <Image src={teamImage} alt="" fill sizes="50vw" placeholder="blur" className="object-cover" />
+        <Image src={studentsImage} alt="" fill sizes="50vw" placeholder="blur" className="object-cover object-[45%_center]" />
       </div>
     </div>
   );

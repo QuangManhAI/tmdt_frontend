@@ -5,7 +5,7 @@ import { DOJO_TIERS } from "@/lib/catalog";
 import { cx } from "@/lib/format";
 import { container } from "@/components/ui/styles";
 import { CampaignLookup, ClubRegisterForm } from "@/components/dojo/DojoForms";
-import teamImage from "@/public/vovi.jpg";
+import studentsImage from "@/public/vo-sinh-vovinam.jpg";
 
 export const metadata: Metadata = {
   title: "Đồng phục võ đường",
@@ -34,7 +34,7 @@ export default function DojosPage() {
           </div>
         </div>
         <div className="overflow-hidden rounded-md bg-muted">
-          <Image src={teamImage} alt="Võ sinh Vovinam mặc đồng phục xanh của đội tuyển" placeholder="blur" sizes="(min-width: 1024px) 46vw, 100vw" className="aspect-[4/3] h-auto w-full object-cover" />
+          <Image src={studentsImage} alt="Võ sinh Vovinam mặc võ phục xanh xếp hàng tại hội thao" placeholder="blur" sizes="(min-width: 1024px) 46vw, 100vw" className="aspect-[4/3] h-auto w-full object-cover" />
         </div>
       </section>
 

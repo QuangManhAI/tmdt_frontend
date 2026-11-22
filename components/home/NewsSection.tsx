@@ -15,7 +15,7 @@ function PostGrid({ posts }: { posts: BlogPost[] }) {
           <Link href={`/blog/${post.slug}`} className="group flex h-full flex-col">
             <div className="overflow-hidden bg-muted">
               <Image
-                src={post.thumbnail || "/vovi.jpg"}
+                src={post.thumbnail || "/vo-sinh-vovinam.jpg"}
                 alt=""
                 width={1376}
                 height={997}

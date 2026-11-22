@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
     title: result.data.title,
     description: result.data.summary,
     alternates: { canonical: `/blog/${result.data.slug}` },
-    openGraph: { type: "article", title: result.data.title, images: [{ url: result.data.thumbnail || "/vovi.jpg" }] },
+    openGraph: { type: "article", title: result.data.title, images: [{ url: result.data.thumbnail || "/banner-bieu-dien.jpg" }] },
   };
 }
 
@@ -44,7 +44,7 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
         </p>
       </header>
       <div className="mx-auto mt-10 max-w-5xl overflow-hidden rounded-md bg-muted">
-        <Image src={post.thumbnail || "/vovi.jpg"} alt="" width={1376} height={997} preload sizes="(min-width: 1024px) 64rem, 100vw" className="aspect-[16/9] h-auto w-full object-cover" />
+        <Image src={post.thumbnail || "/banner-bieu-dien.jpg"} alt="" width={1432} height={593} preload sizes="(min-width: 1024px) 64rem, 100vw" className="aspect-[16/9] h-auto w-full object-cover" />
       </div>
       <div className="mx-auto mt-10 flex max-w-[68ch] flex-col gap-5 text-[17px] leading-[1.75] text-ink-2">
         <p className="text-lg leading-relaxed font-medium text-ink">{post.summary}</p>

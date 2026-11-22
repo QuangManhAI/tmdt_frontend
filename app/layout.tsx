@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     siteName: "VÕ SPORT",
-    images: [{ url: "/vovi.jpg", width: 1376, height: 997, alt: "Đội tuyển Vovinam trong võ phục xanh" }],
+    images: [{ url: "/banner-bieu-dien.jpg", width: 1432, height: 593, alt: "Võ sinh Vovinam biểu diễn trong võ phục xanh" }],
   },
 };
 
